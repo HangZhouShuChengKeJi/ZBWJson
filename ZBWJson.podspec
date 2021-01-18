@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "ZBWJson"
-  s.version      = "0.0.6"
+  s.version      = "0.0.7"
   s.summary      = "ZBWJson json序列号、反序列化"
 
   # This description is used to generate tags and improve search results.
@@ -53,7 +53,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "git@github.com:HangZhouShuChengKeJi/ZBWJson.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/HangZhouShuChengKeJi/ZBWJson.git", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
