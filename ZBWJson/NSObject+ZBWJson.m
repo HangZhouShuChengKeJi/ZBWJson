@@ -22,6 +22,9 @@
 
 - (id)zbw_initWithJsonDic:(NSDictionary *)dictionary depth:(NSInteger)depth
 {
+    if (!dictionary || ![dictionary isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
     Class aClass = [self class];
     
     [[aClass zbwOP_propertyList] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -40,6 +43,16 @@
     return self;
 }
 
+- (id)zbw_initWithJsonStr:(NSString *)jsonStr {
+    NSDictionary *dic = jsonStr.zbw_jsonObject;
+    return [self zbw_initWithJsonDic:dic];
+}
+
+- (id)zbw_initWithJsonStr:(NSString *)jsonStr depth:(NSInteger)depth {
+    NSDictionary *dic = jsonStr.zbw_jsonObject;
+    return [self zbw_initWithJsonDic:dic depth:depth];
+}
+
 + (NSArray *)zbw_arrayWithJsonArray:(NSArray *)array itemClass:(Class)itemClass
 {
     return [self zbw_arrayWithJsonArray:array itemClass:itemClass depth:zbw_Max_Depth];
@@ -47,7 +60,7 @@
 
 + (NSArray *)zbw_arrayWithJsonArray:(NSArray *)array itemClass:(Class)itemClass depth:(NSInteger)depth
 {
-    if (!array) {
+    if (!array || ![array isKindOfClass:[NSArray class]]) {
         return nil;
     }
     
@@ -73,6 +86,16 @@
     }];
     
     return mutableArray;
+}
+
++ (NSArray *)zbw_arrayWithJsonStr:(NSString *)jsonStr itemClass:(Class)itemClass {
+    NSArray *array = jsonStr.zbw_jsonObject;
+    return [NSArray zbw_arrayWithJsonArray:array itemClass:itemClass];
+}
+
++ (NSArray *)zbw_arrayWithJsonStr:(NSString *)jsonStr itemClass:(Class)itemClass depth:(NSInteger)depth {
+    NSArray *array = jsonStr.zbw_jsonObject;
+    return [NSArray zbw_arrayWithJsonArray:array itemClass:itemClass depth:depth];
 }
 
 + (id)zbw_valueOfProperty:(ZBWProperty *)property withJsonValue:(id)value depth:(NSInteger)depth
