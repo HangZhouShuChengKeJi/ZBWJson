@@ -154,7 +154,15 @@
             {
                 if (![value isKindOfClass:[NSString class]])
                 {
-                    resultValue = [NSString stringWithFormat:@"%@",value];
+                    // number转字符串。避免出现精度问题
+                    if ([value isKindOfClass:[NSNumber class]]) {
+                        NSNumber *number = value;
+                        NSString *dStr = [NSString stringWithFormat:@"%f", number.doubleValue];
+                        NSDecimalNumber *dn = [NSDecimalNumber decimalNumberWithString:dStr];
+                        resultValue = dn.stringValue;
+                    } else {
+                        resultValue = [NSString stringWithFormat:@"%@",value];
+                    }
                 }
             }
             //当当前属性为NSNumber类型，而对应的json的value为NSString的时候
