@@ -78,6 +78,11 @@ typedef NS_ENUM(NSInteger, ZBWOPType) {
  */
 + (NSDictionary *)zbwOP_orm;
 
+/**
+ 需要忽略的字段数组。例如：变量@property (nonatomic) UIImage *image；不需要参与json序列化、反序列化，则返回@[@"image"]数组。
+ */
++ (NSArray *)zbwOP_ignoreList;
+
 @end
 
 /**

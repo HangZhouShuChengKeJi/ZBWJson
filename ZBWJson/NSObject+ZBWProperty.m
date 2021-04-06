@@ -36,6 +36,7 @@ static const void *zbwOP_PropertyList_Key = &zbwOP_PropertyList_Key;
         objc_property_t *propertyList = class_copyPropertyList(aClass, &count);
         
         NSDictionary *orm = [self zbwOP_orm];
+        NSArray *ignoreList = [self zbwOP_ignoreList];
         for (int i = 0; i < count; i++)
         {
             objc_property_t property = propertyList[i];
@@ -48,6 +49,10 @@ static const void *zbwOP_PropertyList_Key = &zbwOP_PropertyList_Key;
             NSString *jsonFeildName = name;
             if (orm && orm[name]) {
                 jsonFeildName = orm[name];
+            }
+            
+            if (ignoreList && [ignoreList containsObject:name]) {
+                jsonFeildName = @"ZBWJson ignore feild";
             }
             
             ZBWProperty *op = [[ZBWProperty alloc] initWithName:name typeString:attrType];
@@ -164,6 +169,10 @@ static const void *zbwOP_PropertyList_Key = &zbwOP_PropertyList_Key;
 }
 
 + (NSDictionary *)zbwOP_orm {
+    return nil;
+}
+
++ (NSArray *)zbwOP_ignoreList {
     return nil;
 }
 
