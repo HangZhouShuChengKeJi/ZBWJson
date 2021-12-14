@@ -175,7 +175,7 @@
                     resultValue = [numberFormatter numberFromString:value];
                 }
             }
-            else if ([valueClass isKindOfClass:[NSDate class]]) {
+            else if ([valueClass isSubclassOfClass:[NSDate class]]) {
                 if ([value isKindOfClass:[NSString class]]) {
                     resultValue = [NSDate zbw_dateFromString:value withFormat:@"yyyy-MM-dd HH:mm:ss"];
                 } else {
