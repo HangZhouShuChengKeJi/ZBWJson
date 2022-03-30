@@ -17,6 +17,8 @@ const NSString *NSDate_ZBWAddition_NSDateFormatter_Key = @"NSDate_ZBWAddition_NS
     NSDateFormatter *formatter = dic[NSDate_ZBWAddition_NSDateFormatter_Key];
     if (!formatter) {
         formatter = [[NSDateFormatter alloc] init];
+        formatter.locale = [NSLocale systemLocale];
+        formatter.calendar = [[NSCalendar alloc]initWithCalendarIdentifier:NSCalendarIdentifierISO8601];
         dic[NSDate_ZBWAddition_NSDateFormatter_Key] = formatter;
     }
     return formatter;
