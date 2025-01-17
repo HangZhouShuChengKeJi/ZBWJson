@@ -44,7 +44,7 @@
 }
 
 - (id)zbw_initWithJsonStr:(NSString *)jsonStr {
-    NSDictionary *dic = jsonStr.zbw_jsonObject;
+    NSDictionary *dic = [jsonStr zbw_jsonObject];
     return [self zbw_initWithJsonDic:dic];
 }
 
@@ -161,7 +161,7 @@
                         NSDecimalNumber *dn = [NSDecimalNumber decimalNumberWithString:dStr];
                         resultValue = dn.stringValue;
                     } else {
-                        resultValue = [NSString stringWithFormat:@"%@",value];
+                        resultValue = [NSString stringWithFormat:@"%@",[value zbw_jsonString]];
                     }
                 }
             }
@@ -184,6 +184,9 @@
             }
             else if ([valueClass isSubclassOfClass:[NSArray class]])
             {
+                if ([value isKindOfClass:[NSString class]]) {
+                    value = [value zbw_jsonObject];
+                }
                 resultValue = [NSMutableArray arrayWithCapacity:10];
                 if ([value isKindOfClass:[NSArray class]])
                 {
@@ -214,6 +217,9 @@
             }
             else if ([valueClass isSubclassOfClass:[NSDictionary class]])
             {
+                if ([value isKindOfClass:[NSString class]]) {
+                    value = [value zbw_jsonObject];
+                }
                 if ([value isKindOfClass:[NSDictionary class]])
                 {
                     resultValue = value;
@@ -225,6 +231,9 @@
             }
             else
             {
+                if ([value isKindOfClass:[NSString class]]) {
+                    value = [value zbw_jsonObject];
+                }
                 resultValue = [[valueClass alloc] zbw_initWithJsonDic:value depth:depth - 1];
             }
         }
@@ -237,18 +246,28 @@
 
 @implementation NSObject (ZBW_JSONSerialization)
 
-- (id)zbw_jsonObject
-{
+/**
+ 将任意对象，转成能使用NSJSONSerialization序列号的对象(NSDictionary、NSArray)
+ */
+- (id)zbw_jsonObject {
     return [self zbw_jsonObjectWithDepth:zbw_Max_Depth];
 }
+- (id)zbw_jsonObjectWithDepth:(NSInteger)depth {
+    return [self zbw_jsonObjectWithDepth:depth useOriginStr:NO];
+}
 
-- (id)zbw_jsonObjectWithDepth:(NSInteger)depth
+- (id)zbw_jsonObjectWithDepth:(NSInteger)depth useOriginStr:(BOOL)useOriginStr
 {
     if (depth == 0) {
         return nil;
     }
     // NSString 和 NSNumber,直接返回self
     if ([self isKindOfClass:[NSString class]]) {
+        // 序列化，则直接返回原始字符串
+        if (useOriginStr) {
+            return self;
+        }
+        // 反序列化，如果字符串是json对象或数组，需要序列化处理
         NSData *data = [(NSString *)self dataUsingEncoding:NSUTF8StringEncoding];
         if (data) {
             id v = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -279,7 +298,7 @@
         NSMutableDictionary *mutableDic = [NSMutableDictionary dictionaryWithCapacity:allKey.count];
         [allKey enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             id v = [(NSDictionary *)self objectForKey:obj];
-            id v1 = [v zbw_jsonObjectWithDepth:depth-1];
+            id v1 = [v zbw_jsonObjectWithDepth:depth-1 useOriginStr:YES];
             if (v1) {
                 mutableDic[obj] = v1;
             }
@@ -289,7 +308,7 @@
     else if ([self isKindOfClass:[NSArray class]]) {
         NSMutableArray *array = [NSMutableArray arrayWithCapacity:[(NSArray *)self count]];
         [(NSArray *)self enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            id v = [obj zbw_jsonObjectWithDepth:depth-1];
+            id v = [obj zbw_jsonObjectWithDepth:depth-1 useOriginStr:YES];
             if (v) {
                 [array addObject:v];
             }
@@ -318,7 +337,7 @@
 }
 - (NSData *)zbw_jsonDataWithDepth:(NSInteger)depth
 {
-    id jsonObj = [self zbw_jsonObjectWithDepth:depth];
+    id jsonObj = [self zbw_jsonObjectWithDepth:depth useOriginStr:YES];
     if (!jsonObj) {
         return nil;
     }
@@ -352,17 +371,17 @@
     }
     
     //
-    if ([self isKindOfClass:[NSString class]]) {
-        return self;
+    if ([value isKindOfClass:[NSString class]]) {
+        return value;
     }
-    else if ([self isKindOfClass:[NSData class]]) {
+    else if ([value isKindOfClass:[NSData class]]) {
         return nil;
         //        return [NSJSONSerialization JSONObjectWithData:(NSData *)self options:0 error:nil];
     }
-    else if ([self isKindOfClass:[NSNumber class]]) {
-        return self;
+    else if ([value isKindOfClass:[NSNumber class]]) {
+        return value;
     }
-    else if ([self isKindOfClass:[NSNull class]]) {
+    else if ([value isKindOfClass:[NSNull class]]) {
         return nil;
     }
     
